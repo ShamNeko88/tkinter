@@ -12,7 +12,7 @@ root.title("フレームウィジェットテスト") # タイトルの設定
 # フレームの作成
 frame1 = tk.Frame(
     root,
-    background="gray", # 背景色
+    background="green", # 背景色
     borderwidth=5, # ボーダーの幅
     relief="sunken", # ボーダーの浮彫
     width=400, # 幅
