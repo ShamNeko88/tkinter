@@ -38,7 +38,8 @@ class Frame1(tk.Frame):
     
     # ウィジェット削除
     def del_widgets(self):
-      self.destroy()
+      # self.destroy()
+      self.forget()
         
 
 if __name__ == "__main__":
