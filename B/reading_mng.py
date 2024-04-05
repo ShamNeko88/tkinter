@@ -3,6 +3,9 @@ from tkinter import ttk
 from tkinter import messagebox
 from tkcalendar import DateEntry
 
+"""
+メインウィンドウクラス
+"""
 class MainWindow(tk.Frame):
     def __init__(self, master):
         super().__init__(master)
@@ -87,7 +90,7 @@ class MainWindow(tk.Frame):
         style.theme_use("clam")
     
     def add(self):
-        print("add")
+        sub_window = SubWindow(self, "add")
     
     def update(self):
         print("update")
@@ -95,7 +98,108 @@ class MainWindow(tk.Frame):
     def delete(self):
         print("delete")
 
+"""
+サブウィンドウクラス
+"""
+class SubWindow:
+    def __init__(self, master, mode) -> None:
+        # パラメータの受け取り
+        self.master = master
+        self.mode = mode
 
+        # サブウィンドウの描画
+        self.sub_window = tk.Toplevel()
+        self.sub_window.title("Description")
+        self.sub_window.grab_set()
+
+        # 全ウィジェットの配置
+        self.set_widget()
+    
+    def set_widget(self):
+        # ********* 1行目 *********
+        # 書籍名ラベル
+        label_book_title = ttk.Label(self.sub_window, text="書籍名：")
+        label_book_title.grid(row=0, column=0, padx=5, pady=5, sticky=tk.E)
+        # 書籍名入力欄
+        text_book_title = ttk.Entry(self.sub_window, width=50)
+        text_book_title.grid(row=0, column=1, columnspan=2, sticky=tk.W)
+        # 著者ラベル
+        label_author = ttk.Label(self.sub_window, text="業者：")
+        label_author.grid(row=0, column=3, padx=5, pady=5, sticky=tk.E)
+        # 著者入力欄
+        text_author = ttk.Entry(self.sub_window, width=20)
+        text_author.grid(row=0, column=4, columnspan=2, sticky=tk.W)
+
+        # ********* 2行目 ********
+        # 評価ラベル
+        label_evaluation = ttk.Label(self.sub_window, text="評価：")
+        label_evaluation.grid(row=1, column=0, padx=5, pady=5, sticky=tk.E)
+        # 評価ドロップダウンリスト
+        combo_evaluation = ttk.Combobox(self.sub_window, values=(""), state="readonly")
+        combo_evaluation.grid(row=1, column=1, columnspan=2, sticky=tk.W)
+        # ステータスラベル
+        label_status = ttk.Label(self.sub_window, text="ステータス：")
+        label_status.grid(row=1, column=3, padx=5, pady=5, sticky=tk.E)
+        # ステータスドロップダウンリスト
+        combo_status = ttk.Combobox(self.sub_window, values=(""), state="readonly")
+        combo_status.grid(row=1, column=4, columnspan=2, sticky=tk.W)
+
+        # ********** 3行目 *********
+        # 購入日ラベル
+        label_purchase_date = ttk.Label(self.sub_window, text="購入日：")
+        label_purchase_date.grid(row=2, column=0, padx=5, pady=5, sticky=tk.E)
+        # 購入日カレンダー
+        self.date_purchase = DateEntry(self.sub_window, showweekbumber=False)
+        self.date_purchase.grid(row=2, column=1, sticky=tk.W)
+        # 購入日クリアボタン
+        btn_clear_purchase = ttk.Button(self.sub_window, text="<-Clear")
+        btn_clear_purchase.grid(row=2, column=2, sticky=tk.W)
+        # 開始日ラベル
+        label_start_date = ttk.Label(self.sub_window, text="開始日：")
+        label_start_date.grid(row=2, column=3, padx=5, sticky=tk.E)
+        # 開始日カレンダ
+        self.date_start = DateEntry(self.sub_window, showweeknumbers=False)
+        self.date_start.grid(row=2, column=4, sticky=tk.W)
+        # 開始日クリアボタン
+        btn_clear_start = ttk.Button(self.sub_window, text="<-Clear")
+        btn_clear_start.grid(row=2, column=5, sticky=tk.W)
+        
+        # ********** 4行目 ********
+        # 読了日ラベル
+        label_finish_date = ttk.Label(self.sub_window, text="読了日：")
+        label_finish_date.grid(row=3, column=0, padx=5, pady=5, sticky=tk.E)
+        # 読了日カレンダ
+        self.date_end = DateEntry(self.sub_window, showweeknumbers=False)
+        self.date_end.grid(row=3, column=1, sticky=tk.W)
+        # 読了日クリアボタン
+        btn_clear_end = ttk.Button(self.sub_window, text="<-Clear")
+        btn_clear_end.grid(row=3, column=2, sticky=tk.W)
+        # 総ページ数ラベル
+        label_total_page = ttk.Label(self.sub_window, text="総ページ数：")
+        label_total_page.grid(row=3, column=3, padx=5, sticky=tk.E)
+        # 総ページ数入力欄
+        text_total_page = ttk.Entry(self.sub_window, width=10)
+        text_total_page.grid(row=3, column=4, columnspan=2, sticky=tk.W)
+
+        # ********** 5行目 ********
+        # URLラベル
+        label_url = ttk.Label(self.sub_window, text="URL:")
+        label_url.grid(row=4, column=0, padx=5, pady=5, sticky=tk.E)
+        # URL入力欄
+        text_url = ttk.Entry(self.sub_window, width=100)
+        text_url.grid(row=4, column=1, columnspan=5, sticky=tk.W)
+
+        # ********** 6行目 *********
+        # コメントラベル
+        label_comment = ttk.Label(self.sub_window, text="コメント：")
+        label_comment.grid(row=5, column=0, padx=5, pady=5, sticky=tk.E)
+        # フレーム
+        frame = ttk.Frame(self.sub_window)
+        frame.grid(row=5, column=1, columnspan=5, padx=5, pady=5, sticky=tk.W)
+        
+        # ********* 7行目 **********
+        btn_add = ttk.Button(self.sub_window, text="追加")
+        btn_add.grid(row=6, column=1, padx=5, pady=5, sticky=tk.E)
 if __name__ == "__main__":
     root = tk.Tk()
     mainWindow = MainWindow(master=root)
