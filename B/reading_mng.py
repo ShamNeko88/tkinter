@@ -3,6 +3,12 @@ from tkinter import ttk
 from tkinter import messagebox
 from tkcalendar import DateEntry
 
+# プルダウンリストの中身
+EVALUATION_VALUE = (" - ", " ★☆☆☆☆ ", " ★★☆☆☆ ",
+                    " ★★★☆☆ ", " ★★★★☆ ", " ★★★★★ ")
+STATUS_VALUE = ("0:欲しい", "1:購入済、未読", "2:読書中", "3:読了", "4:途中放棄")
+
+
 """
 メインウィンドウクラス
 """
@@ -42,7 +48,8 @@ class MainWindow(tk.Frame):
                   "status", "purchasedate", "startdate", "enddate", "pages", "url", "comment")
         self.table_books = ttk.Treeview(frame, columns=column, height=10, selectmode="browse", show="headings")
         self.table_books.grid(row=0, column=0, sticky=tk.N+tk.S+tk.E+tk.W)
-        
+        self.table_books.bind("<<TreeviewSelect>>", self.select_record)
+
         # 列の設定(P29)
         self.table_books.column("id", anchor="center", width=30, stretch=False)
         self.table_books.column("name", anchor="w", width=300, stretch=False)
@@ -73,6 +80,7 @@ class MainWindow(tk.Frame):
         self.table_books.insert(parent="", index="end", iid=0, 
                                 values=(0,"あいうえお", "かきくけこ", "-", "", "2023/12/01", "2023/12/02","2023/12/25",
                                 999, "http://hoge.hoge.co.jp/あいうえお", "コメント"))
+        self.id = -1
 
         # 縦スクロールバー
         vscrollbar = ttk.Scrollbar(frame, orient=tk.VERTICAL)
@@ -93,8 +101,21 @@ class MainWindow(tk.Frame):
         sub_window = SubWindow(self, "add")
     
     def update(self):
-        print("update")
+        # リストが選択されている場合にサブウィンドウを表示
+        if self.id != -1:
+            ret = messagebox.askyesno("削除確認", "削除していいですか？")
+            if ret:
+                # 「はい」が押されていたら削除
+                print(f"delete id = {self.id}")
     
+    def select_record(self, e):
+        # 選択行の取得
+        select_id = self.table_books.focus()
+        if select_id != "":
+            # 選択行のレコードの値を取得
+            values = self.table_books.item(select_id, "values")
+            self.id = values[0]
+
     def delete(self):
         print("delete")
 
@@ -135,13 +156,13 @@ class SubWindow:
         label_evaluation = ttk.Label(self.sub_window, text="評価：")
         label_evaluation.grid(row=1, column=0, padx=5, pady=5, sticky=tk.E)
         # 評価ドロップダウンリスト
-        combo_evaluation = ttk.Combobox(self.sub_window, values=(""), state="readonly")
+        combo_evaluation = ttk.Combobox(self.sub_window, values=EVALUATION_VALUE, state="readonly")
         combo_evaluation.grid(row=1, column=1, columnspan=2, sticky=tk.W)
         # ステータスラベル
         label_status = ttk.Label(self.sub_window, text="ステータス：")
         label_status.grid(row=1, column=3, padx=5, pady=5, sticky=tk.E)
         # ステータスドロップダウンリスト
-        combo_status = ttk.Combobox(self.sub_window, values=(""), state="readonly")
+        combo_status = ttk.Combobox(self.sub_window, values=STATUS_VALUE, state="readonly")
         combo_status.grid(row=1, column=4, columnspan=2, sticky=tk.W)
 
         # ********** 3行目 *********
@@ -202,6 +223,9 @@ class SubWindow:
         # 縦スクロールバー
         vscrollbar = ttk.Scrollbar(frame, orient=tk.VERTICAL)
         vscrollbar.pack(side=tk.LEFT, fill=tk.Y)
+        vscrollbar.config(command=self.text_comment.yview)
+        self.text_comment.config(yscrollcommand=vscrollbar.set)
+
         # ********* 7行目 **********
         btn_add = ttk.Button(self.sub_window, text="追加")
         btn_add.grid(row=6, column=1, padx=5, pady=5, sticky=tk.E)
