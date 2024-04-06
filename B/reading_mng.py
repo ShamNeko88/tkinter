@@ -103,6 +103,14 @@ class MainWindow(tk.Frame):
     def update(self):
         # リストが選択されている場合にサブウィンドウを表示
         if self.id != -1:
+            print(f"update id={self.id}")
+            sub_window = SubWindow(self, "update")
+
+
+    def delete(self):
+        print("delete")
+        # リストが選択されている場合にサブウィンドウを表示
+        if self.id != -1:
             ret = messagebox.askyesno("削除確認", "削除していいですか？")
             if ret:
                 # 「はい」が押されていたら削除
@@ -115,10 +123,6 @@ class MainWindow(tk.Frame):
             # 選択行のレコードの値を取得
             values = self.table_books.item(select_id, "values")
             self.id = values[0]
-
-    def delete(self):
-        print("delete")
-
 """
 サブウィンドウクラス
 """
