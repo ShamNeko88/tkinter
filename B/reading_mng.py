@@ -196,10 +196,18 @@ class SubWindow:
         # フレーム
         frame = ttk.Frame(self.sub_window)
         frame.grid(row=5, column=1, columnspan=5, padx=5, pady=5, sticky=tk.W)
-        
+        # コメント入力欄
+        self.text_comment = tk.Text(frame, width=100,  height=5)
+        self.text_comment.pack(side=tk.LEFT)
+        # 縦スクロールバー
+        vscrollbar = ttk.Scrollbar(frame, orient=tk.VERTICAL)
+        vscrollbar.pack(side=tk.LEFT, fill=tk.Y)
         # ********* 7行目 **********
         btn_add = ttk.Button(self.sub_window, text="追加")
         btn_add.grid(row=6, column=1, padx=5, pady=5, sticky=tk.E)
+
+
+
 if __name__ == "__main__":
     root = tk.Tk()
     mainWindow = MainWindow(master=root)
