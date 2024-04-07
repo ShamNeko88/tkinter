@@ -5,10 +5,11 @@ cur = conn.cursor()
 
 cur.execute("create table books("
     "id integer primary key autoincrement, "
-    "name text, auther text, "
+    "name text, "
+    "auther text, "
     "evaluation text,"
     "status text, "
-    "purchase_date"
+    "purchase_date, "
     "start_date text,"
     "end_date text, "
     "pages integer, "
@@ -31,6 +32,7 @@ cur.execute("insert into books ("
 "'Pythonで作るデスクトップアプリケーション',"
 "'岩田秀樹',"
 "'★★★☆☆',"
+"'3:読了',"
 "'2024/01/02',"
 "'2024/01/03',"
 "'2024/01/04',"
@@ -39,4 +41,5 @@ cur.execute("insert into books ("
 "'コメントお願いします')"
 )
 
-)
+conn.commit()
+conn.close()
