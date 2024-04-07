@@ -108,7 +108,6 @@ class MainWindow(tk.Frame):
 
 
     def delete(self):
-        print("delete")
         # リストが選択されている場合にサブウィンドウを表示
         if self.id != -1:
             ret = messagebox.askyesno("削除確認", "削除していいですか？")
