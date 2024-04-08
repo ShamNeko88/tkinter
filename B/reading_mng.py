@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 from tkcalendar import DateEntry
+import sqlite3
 
 # プルダウンリストの中身
 EVALUATION_VALUE = (" - ", " ★☆☆☆☆ ", " ★★☆☆☆ ",
@@ -17,9 +18,26 @@ class MainWindow(tk.Frame):
         super().__init__(master)
         self.master.title("Dokusyo App")
         
+        # データベースとの接続
+        self.db = DatabaseSession()
+
+        # Bookのインスタンス化
+        self.book = Book()
+        books = self.book.select_all(self.db)
+        for book in books:
+            print(f"{book.id}|{book.name}|{book.auther}|{book.evaluation}|{book.status}"
+                  f"{book.purchase_date}|{book.start_date}|{book.end_date}|{book.pages}|{book.url}|{book.comment}")
+
+        # ウィンドウを閉じられた時に処理を実行
+        self.master.protocol("WM_DELETE_WINDOW", self.close_window)
+
         # ウィジェットの配置
         self.set_widget()
     
+    def close_window(self):
+        self.db.disconnect()
+        self.master.destroy()
+
     def set_widget(self):
         # ********* 1行目 ************
         # アプリタイトル
@@ -105,7 +123,6 @@ class MainWindow(tk.Frame):
         if self.id != -1:
             print(f"update id={self.id}")
             sub_window = SubWindow(self, "update")
-
 
     def delete(self):
         # リストが選択されている場合にサブウィンドウを表示
@@ -233,6 +250,67 @@ class SubWindow:
         btn_add = ttk.Button(self.sub_window, text="追加")
         btn_add.grid(row=6, column=1, padx=5, pady=5, sticky=tk.E)
 
+"""
+Bookテーブルクラス
+"""
+class Book:
+    def __init__(self):
+        self.id = -1
+        self.name = ""
+        self.auther = ""
+        self.evaluation = EVALUATION_VALUE[0]
+        self.status = STATUS_VALUE[1]
+        self.purchase_date = ""
+        self.start_date = ""
+        self.end_date = ""
+        self.pages = 0
+        self.url = ""
+        self.comment = ""
+    
+    def select_all(self, db):
+        db.cursor.execute("select * from books order by id desc")
+        books = []
+        for row in db.cursor:
+            book = Book()
+            book.id = row[0]
+            book.name = row[1]
+            book.auther = row[2]
+            book.evaluation = row[3]
+            book.status = row[4]
+            book.purchase_date = row[5]
+            book.start_date = row[6]
+            book.end_date = row[7]
+            book.pages = row[8]
+            book.url = row[9]
+            book.comment = row[10]
+
+            books.append(book)
+        return books
+    
+    def select(self, db, id):
+        pass
+    
+    def insert(self, db):
+        pass
+    
+    def update(self, db):
+        pass
+    
+    def delete(self, db, id):
+        pass
+
+"""
+データベース管理クラス
+"""
+class DatabaseSession:
+    def __init__(self):
+        self.conn = sqlite3.connect("./db/Books.db")
+        print("connected")
+        self.cursor = self.conn.cursor()
+    
+    def disconnect(self):
+        self.conn.close()
+        print("disconnected")
 
 
 if __name__ == "__main__":
