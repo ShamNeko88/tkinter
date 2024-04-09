@@ -23,6 +23,9 @@ class MainWindow(tk.Frame):
 
         # Bookのインスタンス化
         self.book = Book()
+        book = self.book.select(self.db, 1)
+        print(f"{book.id}|{book.name}|{book.auther}|{book.evaluation}|{book.status}|"
+              f"{book.purchase_date}|{book.start_date}|{book.end_date}|{book.pages}|{book.url}|{book.comment}")
         books = self.book.select_all(self.db)
         for book in books:
             print(f"{book.id}|{book.name}|{book.auther}|{book.evaluation}|{book.status}"
@@ -288,7 +291,22 @@ class Book:
         return books
     
     def select(self, db, id):
-        pass
+        db.cursor.execute("select * from books order by id desc")
+        result = db.cursor.fetchone()
+        book = Book()
+        book.id = result[0]
+        book.name = result[1]
+        book.auther = result[2]
+        book.evaluation = result[3]
+        book.status = result[4]
+        book.purchase_date = result[5]
+        book.start_date = result[6]
+        book.end_date = result[7]
+        book.pages = result[8]
+        book.url = result[9]
+        book.comment = result[10]
+
+        return book
     
     def insert(self, db):
         pass
