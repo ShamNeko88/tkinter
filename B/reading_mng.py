@@ -17,29 +17,19 @@ class MainWindow(tk.Frame):
     def __init__(self, master):
         super().__init__(master)
         self.master.title("Dokusyo App")
-        
+
         # データベースとの接続
         self.db = DatabaseSession()
 
         # Bookのインスタンス化
         self.book = Book()
 
-        self.book.delete(self.db, 1)
-
-        book = self.book.select(self.db, 1)
-        print(f"{book.id}|{book.name}|{book.auther}|{book.evaluation}|{book.status}|"
-              f"{book.purchase_date}|{book.start_date}|{book.end_date}|{book.pages}|{book.url}|{book.comment}")
-        books = self.book.select_all(self.db)
-        for book in books:
-            print(f"{book.id}|{book.name}|{book.auther}|{book.evaluation}|{book.status}"
-                  f"{book.purchase_date}|{book.start_date}|{book.end_date}|{book.pages}|{book.url}|{book.comment}")
-
         # ウィンドウを閉じられた時に処理を実行
         self.master.protocol("WM_DELETE_WINDOW", self.close_window)
 
         # ウィジェットの配置
         self.set_widget()
-    
+
     def close_window(self):
         self.db.disconnect()
         self.master.destroy()
@@ -99,12 +89,8 @@ class MainWindow(tk.Frame):
         self.table_books.heading("pages", text="ページ数", anchor="center")
         self.table_books.heading("url", text="URL", anchor="center")
         self.table_books.heading("comment", text="コメント", anchor="center")
-        
-        # ダミーデータ
-        self.table_books.insert(parent="", index="end", iid=0, 
-                                values=(0,"あいうえお", "かきくけこ", "-", "", "2023/12/01", "2023/12/02","2023/12/25",
-                                999, "http://hoge.hoge.co.jp/あいうえお", "コメント"))
-        self.id = -1
+
+        self.display_list()
 
         # 縦スクロールバー
         vscrollbar = ttk.Scrollbar(frame, orient=tk.VERTICAL)
@@ -120,10 +106,10 @@ class MainWindow(tk.Frame):
         # スタイルの適用
         style = ttk.Style()
         style.theme_use("clam")
-    
+
     def add(self):
         sub_window = SubWindow(self, "add")
-    
+
     def update(self):
         # リストが選択されている場合にサブウィンドウを表示
         if self.id != -1:
@@ -137,7 +123,7 @@ class MainWindow(tk.Frame):
             if ret:
                 # 「はい」が押されていたら削除
                 print(f"delete id = {self.id}")
-    
+
     def select_record(self, e):
         # 選択行の取得
         select_id = self.table_books.focus()
@@ -145,6 +131,37 @@ class MainWindow(tk.Frame):
             # 選択行のレコードの値を取得
             values = self.table_books.item(select_id, "values")
             self.id = values[0]
+    
+    def display_list(self):
+        # 既存レコードの削除
+        for row in self.table_books.get_children():
+            self.table_books.delete(row)
+    
+        # 検索
+        books = self.book.select_all(self.db)
+
+        # レコードの追加
+        for index, book in enumerate(books):
+            self.table_books.insert(
+                parent="", index="end", iid=index,
+                values=(book.id,
+                        book.name,
+                        book.auther,
+                        book.evaluation,
+                        book.status,
+                        book.purchase_date,
+                        book.start_date,
+                        book.end_date,
+                        book.pages,
+                        book.url,
+                        book.comment)
+            )
+        # リスト選択のID値を初期化（未選択状態）
+        self.id = -1
+
+        # 再描画
+        self.master.update()
+
 """
 サブウィンドウクラス
 """
@@ -244,7 +261,7 @@ class SubWindow:
         frame = ttk.Frame(self.sub_window)
         frame.grid(row=5, column=1, columnspan=5, padx=5, pady=5, sticky=tk.W)
         # コメント入力欄
-        self.text_comment = tk.Text(frame, width=100,  height=5)
+        self.text_comment = tk.Text(frame, width=100, height=5)
         self.text_comment.pack(side=tk.LEFT)
         # 縦スクロールバー
         vscrollbar = ttk.Scrollbar(frame, orient=tk.VERTICAL)
@@ -253,8 +270,12 @@ class SubWindow:
         self.text_comment.config(yscrollcommand=vscrollbar.set)
 
         # ********* 7行目 **********
-        btn_add = ttk.Button(self.sub_window, text="追加")
-        btn_add.grid(row=6, column=1, padx=5, pady=5, sticky=tk.E)
+        if self.mode == "add":
+            btn_add = ttk.Button(self.sub_window, text="追加")
+            btn_add.grid(row=6, column=1, padx=5, pady=5, sticky=tk.E)
+        else:
+            btn_update = ttk.Button(self.sub_window, text="更新")
+            btn_update.grid(row=6, column=4, padx=5, pady=5, sticky=tk.E)
 
 """
 Bookテーブルクラス
@@ -294,7 +315,7 @@ class Book:
         return books
     
     def select(self, db, id):
-        db.cursor.execute("select * from books order by id desc")
+        db.cursor.execute(f"select * from books where id={id}")
         result = db.cursor.fetchone()
         book = Book()
         book.id = result[0]
@@ -316,8 +337,8 @@ class Book:
                             purchase_date, start_date, end_date, pages, url, comment)"
                           f"values ('{self.name}',"
                                   f"'{self.auther}',"
-                                  f"'{self.status}',"
                                   f"'{self.evaluation}',"
+                                  f"'{self.status}',"
                                   f"'{self.purchase_date}',"
                                   f"'{self.start_date}',"
                                   f"'{self.end_date}',"
