@@ -24,15 +24,16 @@ class MainWindow(tk.Frame):
         # Bookのインスタンス化
         self.book = Book()
         
-        self.book.name = "書籍名テスト"
-        self.book.auther = "著者テスト"
-        self.book.evaluation = EVALUATION_VALUE[1]
-        self.book.status = STATUS_VALUE[1]
+        self.book.name = "書籍名テスト2"
+        self.book.auther = "著者テスト2"
+        self.book.evaluation = EVALUATION_VALUE[3]
+        self.book.status = STATUS_VALUE[4]
         self.book.purchase_date = "2023/12/24"
-        self.book.end_date = "2023/12/26"
-        self.book.pages = 123
-        self.book.url = "https://hoge.com/test.aspx"
-        self.book.comment = "テスト用コメント"
+        self.book.start_date = "2023/12/25"
+        self.book.end_date = ""
+        self.book.pages = 987
+        self.book.url = "https://hoge.com/test2.aspx"
+        self.book.comment = "テスト用コメント2"
         self.book.insert(self.db)
 
         book = self.book.select(self.db, 1)
@@ -321,17 +322,8 @@ class Book:
         return book
     
     def insert(self, db):
-        db.cursor.execute(f"insert into 
-                            books(name,
-                                  auther,
-                                  evaluation,
-                                  status,
-                                  purchase_date,
-                                  start_date,
-                                  end_date,
-                                  pages,
-                                  url,
-                                  comment)"
+        db.cursor.execute(f"insert into books(name, auther, evaluation, status,\
+                            purchase_date, start_date, end_date, pages, url, comment)"
                           f"values('{self.name}',"
                                   f"'{self.auther}',"
                                   f"'{self.status}',"
@@ -346,8 +338,20 @@ class Book:
         db.conn.commit()
     
     def update(self, db):
-        pass
-    
+        db.cursor.execute(f"insert into books (name, auther, evaluation, status,\
+                            purchase_date, start_date, end_date, pages, url, comment) "
+                          f"values ('{self.name}',"
+                          f"'{self.auther}',"
+                          f"'{self.evaluation}',"
+                          f"'{self.status}',"
+                          f"'{self.purchase_date}',"
+                          f"'{self.start_date}',"
+                          f"'{self.end_date}',"
+                          f"{self.pages},"
+                          f"'{self.url}',"
+                          f"'{self.comment}')")
+        db.conn.commit()
+        
     def delete(self, db, id):
         pass
 
