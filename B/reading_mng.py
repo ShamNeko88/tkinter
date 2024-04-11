@@ -23,18 +23,8 @@ class MainWindow(tk.Frame):
 
         # Bookのインスタンス化
         self.book = Book()
-        self.book.id = 2
-        self.book.name = "書籍名テスト2"
-        self.book.auther = "著者テスト2"
-        self.book.evaluation = EVALUATION_VALUE[3]
-        self.book.status = STATUS_VALUE[4]
-        self.book.purchase_date = "2023/12/24"
-        self.book.start_date = "2023/12/25"
-        self.book.end_date = ""
-        self.book.pages = 987
-        self.book.url = "https://hoge.com/test2.aspx"
-        self.book.comment = "テスト用コメント2"
-        self.book.update(self.db)
+
+        self.book.delete(self.db, 1)
 
         book = self.book.select(self.db, 1)
         print(f"{book.id}|{book.name}|{book.auther}|{book.evaluation}|{book.status}|"
@@ -353,7 +343,8 @@ class Book:
         db.conn.commit()
 
     def delete(self, db, id):
-        pass
+        db.cursor.execute(f"delete from books where id={id}")
+        db.conn.commit()
 
 """
 データベース管理クラス
